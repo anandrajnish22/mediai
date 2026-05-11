@@ -47,10 +47,6 @@ const Login = () => {
     }
   };
 
-  const demoLogins = [
-    { label: 'Patient', email: 'patient@mediai.com', password: 'patient123', color: 'bg-blue-500' },
-    { label: 'Admin', email: 'admin@mediai.com', password: 'admin123', color: 'bg-purple-500' },
-  ];
 
   return (
     <div className="min-h-screen flex">
@@ -84,15 +80,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* Demo Login Buttons */}
-          <div className="flex gap-2 mb-6">
-            {demoLogins.map((demo) => (
-              <button key={demo.label} onClick={() => { setEmail(demo.email); setPassword(demo.password); setApprovalMessage(null); }}
-                className="flex-1 py-2 px-3 rounded-xl border border-surface-200 dark:border-surface-700 text-sm font-medium hover:bg-surface-50 dark:hover:bg-surface-800 transition-all">
-                <span className={`inline-block w-2 h-2 rounded-full ${demo.color} mr-2`} />{demo.label} Demo
-              </button>
-            ))}
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
