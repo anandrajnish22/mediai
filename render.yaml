@@ -3,6 +3,7 @@ services:
   - type: web
     name: mediai-backend
     env: node
+    plan: free
     rootDir: backend
     buildCommand: npm install
     startCommand: node server.js
@@ -29,6 +30,7 @@ services:
   - type: web
     name: mediai-ai-service
     env: python
+    plan: free
     rootDir: ai-service
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --log-file -
