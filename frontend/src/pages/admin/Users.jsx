@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaUsers, FaUserMd, FaTrash } from 'react-icons/fa';
 import { FiSearch, FiEdit2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
