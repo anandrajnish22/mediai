@@ -3,9 +3,9 @@ import { FaHeartbeat, FaBrain, FaShieldAlt, FaUsers, FaAward, FaGlobeAsia } from
 const About = () => {
   const team = [
     { name: 'Dr. Sarah Johnson', role: 'Chief Medical Officer', initials: 'SJ' },
-    { name: 'Arjun Patel', role: 'AI/ML Lead Engineer', initials: 'AP' },
-    { name: 'Priya Mehta', role: 'Full Stack Developer', initials: 'PM' },
-    { name: 'Vikram Singh', role: 'Data Scientist', initials: 'VS' },
+    { name: 'Ranjan Kumar', role: 'AI/ML Lead Engineer', initials: 'AP' },
+    { name: 'Rajnish Anand', role: 'Full Stack Developer', initials: 'PM' },
+    { name: 'Rashtrapati Kumar', role: 'Data Scientist', initials: 'VS' },
   ];
 
   return (

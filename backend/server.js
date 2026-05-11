@@ -11,6 +11,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust the Cloudflare proxy to fix express-rate-limit errors
+app.set('trust proxy', 1);
+
 // Connect to MongoDB
 connectDB();
 
