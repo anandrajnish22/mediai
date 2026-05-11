@@ -135,11 +135,7 @@ cd ai-service && python app.py
 - **Backend API**: http://localhost:5000/api/health
 - **AI Service**: http://localhost:5001/health
 
-### Demo Accounts
-| Role | Email | Password |
-|------|-------|----------|
-| Patient | patient@mediai.com | patient123 |
-| Admin | admin@mediai.com | admin123 |
+
 
 ---
 
