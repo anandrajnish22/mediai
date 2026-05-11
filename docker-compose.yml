@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 1. Database Service (Local MongoDB for testing/production)
+  # If using MongoDB Atlas, you can comment this block out.
+  mongodb:
+    image: mongo:latest
+    container_name: mediai-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+  # 2. Node.js Backend Service
+  backend:
+    build: ./backend
+    container_name: mediai-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/mediai}
+      - JWT_SECRET=${JWT_SECRET:-your_super_secret_key_change_this_in_production}
+      # The backend connects directly to the ai-service container via internal Docker network
+      - AI_SERVICE_URL=http://ai-service:5001
+      # Update this to your live domain (e.g., https://mediai.com)
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  # 3. Python AI Service
+  ai-service:
+    build: ./ai-service
+    container_name: mediai-ai
+    ports:
+      - "5001:5001"
+    restart: unless-stopped
+
+  # 4. React Frontend (Served by Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      # Nginx config acts as a reverse proxy, so we tell React API calls to hit "/api"
+      args:
+        - VITE_API_URL=/api
+    container_name: mediai-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

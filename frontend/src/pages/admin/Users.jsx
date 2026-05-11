@@ -3,33 +3,57 @@ import { FaUsers, FaUserMd, FaTrash } from 'react-icons/fa';
 import { FiSearch, FiEdit2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
-const demoUsers = [
-  { _id: '1', name: 'Rahul Singh', email: 'rahul@email.com', role: 'patient', isActive: true, createdAt: '2024-11-15' },
-  { _id: '2', name: 'Dr. Priya Sharma', email: 'priya@mediai.com', role: 'doctor', isActive: true, createdAt: '2024-10-20' },
-  { _id: '3', name: 'Dr. Rajesh Kumar', email: 'rajesh@mediai.com', role: 'doctor', isActive: true, createdAt: '2024-09-15' },
-  { _id: '4', name: 'Amit Patel', email: 'amit@email.com', role: 'patient', isActive: false, createdAt: '2024-12-01' },
-  { _id: '5', name: 'Sneha Gupta', email: 'sneha@email.com', role: 'patient', isActive: true, createdAt: '2024-12-05' },
-  { _id: '6', name: 'Admin User', email: 'admin@mediai.com', role: 'admin', isActive: true, createdAt: '2024-08-01' },
-];
+import api from '../../services/api';
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState(demoUsers);
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchUsers = async () => {
+    try {
+      setIsLoading(true);
+      const res = await api.get('/admin/users');
+      // The backend returns { success: true, data: users }
+      setUsers(res.data.data || []);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to load users');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const filtered = users.filter(u => {
-    const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = (u.name || '').toLowerCase().includes(search.toLowerCase()) || 
+                        (u.email || '').toLowerCase().includes(search.toLowerCase());
     return roleFilter === 'all' ? matchSearch : matchSearch && u.role === roleFilter;
   });
 
-  const toggleActive = (id) => {
-    setUsers(prev => prev.map(u => u._id === id ? { ...u, isActive: !u.isActive } : u));
-    toast.success('User status updated');
+  const toggleActive = async (id, currentStatus) => {
+    try {
+      await api.put(`/admin/users/${id}`, { isActive: !currentStatus });
+      setUsers(prev => prev.map(u => u._id === id ? { ...u, isActive: !currentStatus } : u));
+      toast.success('User status updated');
+    } catch (error) {
+      toast.error('Failed to update user status');
+    }
   };
 
-  const deleteUser = (id) => {
-    setUsers(prev => prev.filter(u => u._id !== id));
-    toast.success('User deleted');
+  const deleteUser = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+    try {
+      await api.delete(`/admin/users/${id}`);
+      setUsers(prev => prev.filter(u => u._id !== id));
+      toast.success('User deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete user');
+    }
   };
 
   const roleColors = { patient: 'badge-info', doctor: 'badge-success', admin: 'badge-warning' };
@@ -70,7 +94,7 @@ const AdminUsers = () => {
                 <tr key={user._id} className="border-t border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-white text-sm font-bold">{user.name.charAt(0)}</div>
+                      <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-white text-sm font-bold">{(user.name || '?').charAt(0)}</div>
                       <div>
                         <p className="font-semibold text-sm">{user.name}</p>
                         <p className="text-xs text-surface-500">{user.email}</p>
@@ -79,7 +103,7 @@ const AdminUsers = () => {
                   </td>
                   <td className="px-6 py-4"><span className={`${roleColors[user.role]} capitalize`}>{user.role}</span></td>
                   <td className="px-6 py-4">
-                    <button onClick={() => toggleActive(user._id)}
+                    <button onClick={() => toggleActive(user._id, user.isActive)}
                       className={`w-10 h-5 rounded-full transition-all relative ${user.isActive ? 'bg-green-500' : 'bg-surface-300'}`}>
                       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${user.isActive ? 'left-5' : 'left-0.5'}`} />
                     </button>
